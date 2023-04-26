@@ -10,6 +10,17 @@ export default {
             newBtc: null
         }
     },
+    computed: {
+        priceDiff() {
+            return (this.newBtc ? this.newBtc.price : this.btc.price) - (this.newBtc ? this.newBtc.previous_price : this.btc.previous_price)
+        },
+        fromDbOrWebSocketsPrice() {
+            return this.newBtc ? this.newBtc.price : this.btc.price
+        },
+        fromDbOrWebSocketsPreviousPrice() {
+            return this.newBtc ? this.newBtc.previous_price : this.btc.previous_price
+        }
+    },
     props: {
         btc: Object,
     },
@@ -29,19 +40,17 @@ export default {
     <h1 class="text-center mt-10 text-xl">BTC/USD</h1>
     <div class="flex justify-center mt-10">
         <h1 class="text-center text-3xl mx-5">
-            {{
-                ((newBtc ? newBtc.price : btc.price) - (newBtc ? newBtc.previous_price : btc.previous_price)) > 0 ? '+' : ''
-            }}
-            {{ (newBtc ? newBtc.price : btc.price) - (newBtc ? newBtc.previous_price : btc.previous_price) }}
+            {{ priceDiff > 0 ? '+' : '' }}
+            {{ priceDiff }}
         </h1>
-        <svg v-if="(!newBtc ? btc.price : newBtc.price) < (!newBtc ? btc.previous_price : newBtc.previous_price)"
+        <svg v-if="fromDbOrWebSocketsPrice < fromDbOrWebSocketsPreviousPrice"
             xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor"
             class="bi bi-chevron-down text-red-700" viewBox="0 0 16 16">
             <path fill-rule="evenodd"
                 d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
         </svg>
 
-        <svg v-if="(!newBtc ? btc.price : newBtc.price) > (!newBtc ? btc.previous_price : newBtc.previous_price)"
+        <svg v-if="fromDbOrWebSocketsPrice > fromDbOrWebSocketsPreviousPrice"
             xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor"
             class="bi bi-chevron-up text-green-700" viewBox="0 0 16 16">
             <path fill-rule="evenodd"
@@ -49,7 +58,7 @@ export default {
         </svg>
 
         <h1 class="text-center text-3xl mx-5">
-            {{ newBtc ? newBtc.price : btc.price }}$
+            {{ fromDbOrWebSocketsPrice }}$
         </h1>
     </div>
 </template>
